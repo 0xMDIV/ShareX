@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2024 ShareX Team
+    Copyright (c) 2007-2025 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -222,11 +222,11 @@ namespace ShareX
                 case HotkeyType.ImageEffects:
                     if (command != null && !string.IsNullOrEmpty(command.Parameter) && File.Exists(command.Parameter))
                     {
-                        OpenImageEffects(command.Parameter, taskSettings);
+                        OpenImageEffects(command.Parameter, safeTaskSettings);
                     }
                     else
                     {
-                        OpenImageEffects(taskSettings);
+                        OpenImageEffects(safeTaskSettings);
                     }
                     break;
                 case HotkeyType.ImageViewer:
@@ -728,7 +728,8 @@ namespace ShareX
             if (taskSettings == null) taskSettings = TaskSettings.GetDefaultTaskSettings();
 
             await ScrollingCaptureForm.StartStopScrollingCapture(taskSettings.CaptureSettingsReference.ScrollingCaptureOptions,
-                img => UploadManager.RunImageTask(img, taskSettings));
+                img => UploadManager.RunImageTask(img, taskSettings),
+                () => PlayNotificationSoundAsync(NotificationSound.ActionCompleted, taskSettings));
         }
 
         public static void OpenAutoCapture(TaskSettings taskSettings = null)
@@ -1214,12 +1215,12 @@ namespace ShareX
 
                     if (taskSettings == null) taskSettings = Program.DefaultTaskSettings;
 
-                    using (ImageEffectsForm imageEffectsForm = new ImageEffectsForm(bmp, taskSettings.ImageSettings.ImageEffectPresets,
+                    using (ImageEffectsForm imageEffectsForm = new ImageEffectsForm(bmp, taskSettings.ImageSettingsReference.ImageEffectPresets,
                         taskSettings.ImageSettings.SelectedImageEffectPreset))
                     {
                         imageEffectsForm.EnableToolMode(x => UploadManager.RunImageTask(x, taskSettings), filePath);
                         imageEffectsForm.ShowDialog();
-                        //taskSettings.ImageSettings.SelectedImageEffectPreset = imageEffectsForm.SelectedPresetIndex;
+                        //taskSettings.ImageSettingsReference.SelectedImageEffectPreset = imageEffectsForm.SelectedPresetIndex;
                     }
                 }
             }
@@ -1967,7 +1968,7 @@ namespace ShareX
                 catch (Exception e)
                 {
                     DebugHelper.WriteException(e);
-                    e.ShowError();
+                    e.ShowError(false);
                 }
             }
         }

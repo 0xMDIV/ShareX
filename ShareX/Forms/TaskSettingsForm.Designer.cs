@@ -1993,7 +1993,11 @@
             // nudAutoIncrementNumber
             //
             resources.ApplyResources(this.nudAutoIncrementNumber, "nudAutoIncrementNumber");
-            this.nudAutoIncrementNumber.Maximum = new decimal(new int[] { 100000000, 0, 0, 0 });
+            this.nudAutoIncrementNumber.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
             this.nudAutoIncrementNumber.Name = "nudAutoIncrementNumber";
             //
             // cbFileUploadReplaceProblematicCharacters
